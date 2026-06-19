@@ -48,4 +48,20 @@ public class Web3ClientVersionTest {
 
     assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
   }
+    @Test
+    public void shouldHandleEmptyClientVersionGracefully() {
+
+        final Web3ClientVersion emptyMethod = new Web3ClientVersion("");
+
+        final JsonRpcRequestContext request =
+                new JsonRpcRequestContext(
+                        new JsonRpcRequest(JSON_RPC_VERSION, ETH_METHOD, new Object[] {}));
+
+        final JsonRpcResponse expectedResponse =
+                new JsonRpcSuccessResponse(request.getRequest().getId(), "");
+
+        final JsonRpcResponse actualResponse = emptyMethod.response(request);
+
+        assertThat(actualResponse).usingRecursiveComparison().isEqualTo(expectedResponse);
+    }
 }
