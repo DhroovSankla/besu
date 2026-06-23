@@ -77,4 +77,23 @@ public class TxPoolBesuStatisticsTest {
     when(pendingTransaction.isReceivedFromLocalSource()).thenReturn(local);
     return pendingTransaction;
   }
+
+  @Test
+  public void shouldGiveZeroStatisticsWhenPoolIsEmpty() {
+    final JsonRpcRequestContext request =
+        new JsonRpcRequestContext(
+            new JsonRpcRequest(
+                JSON_RPC_VERSION, TXPOOL_PENDING_TRANSACTIONS_METHOD, new Object[] {}));
+
+    when(transactionPool.maxSize()).thenReturn(4096L);
+    when(transactionPool.getPendingTransactions()).thenReturn(Sets.newHashSet());
+
+    final JsonRpcSuccessResponse actualResponse = (JsonRpcSuccessResponse) method.response(request);
+    final PendingTransactionsStatisticsResult result =
+        (PendingTransactionsStatisticsResult) actualResponse.getResult();
+
+    assertThat(result.getRemoteCount()).isEqualTo(0);
+    assertThat(result.getLocalCount()).isEqualTo(0);
+    assertThat(result.getMaxSize()).isEqualTo(4096);
+  }
 }
